@@ -915,7 +915,7 @@ defmodule Mint.HTTP2 do
 
   ## Helpers
 
-  defp negotiate(hostname, port, scheme, transport_opts) do
+  defp negotiate(hostname, port, :https, transport_opts) do
     transport = scheme_to_transport(scheme)
 
     with {:ok, socket} <- transport.connect(hostname, port, transport_opts),
@@ -926,6 +926,11 @@ defmodule Mint.HTTP2 do
         {:error, transport.wrap_error({:bad_alpn_protocol, protocol})}
       end
     end
+  end
+
+  defp negotiate(hostname, port, :http, transport_opts) do
+    transport = scheme_to_transport(scheme)
+    transport.connect(hostname, port, transport_opts)
   end
 
   defp receive_server_settings(transport, socket) do
